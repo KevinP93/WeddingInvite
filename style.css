@@ -1,0 +1,124 @@
+:root {
+    --gold: #D4AF37;
+    --beige: #F5F5DC;
+    --dark-beige: #E8E1D1;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #FFF;
+    color: #333;
+    transition: all 0.3s ease;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+.gold-text {
+    color: var(--gold);
+}
+
+.gold-border {
+    border-color: var(--gold);
+}
+
+.gold-bg {
+    background-color: var(--gold);
+}
+
+.beige-bg {
+    background-color: var(--beige);
+}
+
+.dark-beige-bg {
+    background-color: var(--dark-beige);
+}
+
+.btn-gold {
+    background-color: var(--gold);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-gold {
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+    background-color: var(--gold);
+    color: white;
+}
+
+.card-envelope {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: all 1s ease;
+    transform-origin: bottom center;
+}
+
+.card-envelope.open {
+    transform: rotateX(180deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.5s;
+}
+
+.card-content.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.language-selector {
+    transition: all 0.3s ease;
+}
+
+.language-selector.active {
+    color: var(--gold);
+    font-weight: 500;
+}
+
+.floating {
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.heart-beat {
+    animation: heartBeat 1.5s ease infinite;
+}
+
+@keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.05); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
