@@ -27,7 +27,7 @@ updateCountdown();
 // Language data
 const translations = {
     fr: {
-        openInvitation: "Ouvrir l'invitation",
+        openInvitation: "Vous avez reçu une invitation",
         clickToOpen: "Cliquez ci-dessous pour ouvrir l'invitation de mariage",
         open: "Ouvrir",
         saveTheDate: "Réservez la date",
@@ -69,7 +69,7 @@ const translations = {
         contactInfo: "Pour toute question, veuillez nous contacter à c.kevinpereira@gmail.com"
     },
     pt: {
-        openInvitation: "Abrir Convite",
+        openInvitation: "Recebeu um convite",
         clickToOpen: "Clique abaixo para abrir o convite de casamento",
         open: "Abrir",
         saveTheDate: "Reserve a Data",
