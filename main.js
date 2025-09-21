@@ -66,7 +66,7 @@ const translations = {
         rsvpConfirmed: "Votre RSVP a été confirmé. Nous avons hâte de célébrer avec vous!",
         close: "Fermer",
         thankYouForCelebrating: "Merci de célébrer avec nous!",
-        contactInfo: "Pour toute question, veuillez nous contacter à c.kevinpereira@gmail.com"
+        contactInfoPrefix: "Pour toute question, veuillez nous contacter au "
     },
     pt: {
         openInvitation: "Recebeu um convite",
@@ -108,7 +108,7 @@ const translations = {
         rsvpConfirmed: "Sua confirmação foi recebida. Estamos ansiosos para celebrar com você!",
         close: "Fechar",
         thankYouForCelebrating: "Obrigado por celebrar conosco!",
-        contactInfo: "Para qualquer dúvida, entre em contato conosco em c.kevinpereira@gmail.com"
+        contactInfoPrefix: "Para qualquer dúvida, entre em contato conosco"
     }
 };
 
