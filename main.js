@@ -149,17 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     openEnvelopeBtn.addEventListener('click', () => {
         const envelope = document.querySelector('.card-envelope');
-        const cardContent = document.querySelector('.card-content');
-
         envelope.classList.add('open');
-
         setTimeout(() => {
             envelopeScreen.classList.add('hidden');
             mainContent.classList.remove('hidden');
-            const contentElements = document.querySelectorAll('.card-content');
-            contentElements.forEach(el => el.classList.add('show'));
-        }, 1000);
+            mainContent.classList.add('show');
+        }, 800); // durée = durée de la transition CSS
     });
+
 
     changeLanguageBtn.addEventListener('click', () => {
         currentLanguage = currentLanguage === 'fr' ? 'pt' : 'fr';
