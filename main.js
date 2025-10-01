@@ -1,4 +1,4 @@
-const weddingDate = new Date(2026, 7, 27, 15, 0, 0);
+﻿const weddingDate = new Date(2026, 7, 27, 15, 0, 0);
 function updateCountdown() {
     const now = new Date();
     const totalMs = weddingDate - now;
@@ -121,8 +121,8 @@ const translations = {
 let currentLanguage = 'fr';
 
 const FORM_ENDPOINT = 'https://formsubmit.co/ajax/c.kevinpereira@gmail.com';
-const FORM_SUBJECT = '[ Réponse mariage]';
-const FORM_DECLINE_SUBJECT = '[ Reponse NEGATIVE ]';
+const FORM_SUBJECT = '[ Réponse mariage POSITIVE]';
+const FORM_DECLINE_SUBJECT = '[ Réponse mariage NEGATIVE ]';
 
 // DOM Elements
 const languageScreen = document.getElementById('languageScreen');
