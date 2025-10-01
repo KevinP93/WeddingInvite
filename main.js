@@ -61,6 +61,7 @@ const translations = {
         phoneNumber: "Numéro de téléphone",
         numberOfAttendees: "Nombre de participants",
         selectNumber: "Sélectionnez un nombre",
+        additionalGuestsLabel: "Noms des invités supplémentaires",
         submitRsvp: "Soumettre RSVP",
         thankYou: "Merci!",
         rsvpConfirmed: "Votre RSVP a été confirmé. Nous avons hâte de célébrer avec vous!",
@@ -103,6 +104,7 @@ const translations = {
         phoneNumber: "Número de Telefone",
         numberOfAttendees: "Número de Convidados",
         selectNumber: "Selecione um número",
+        additionalGuestsLabel: "Nomes dos convidados adicionais",
         submitRsvp: "Enviar Confirmação",
         thankYou: "Obrigado!",
         rsvpConfirmed: "Sua confirmação foi recebida. Estamos ansiosos para celebrar com você!",
@@ -113,6 +115,9 @@ const translations = {
 };
 
 let currentLanguage = 'fr';
+
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/c.kevinpereira@gmail.com';
+const FORM_SUBJECT = '[ Réponse mariage]';
 
 // DOM Elements
 const languageScreen = document.getElementById('languageScreen');
@@ -131,6 +136,9 @@ const closeRsvpModal = document.getElementById('closeRsvpModal');
 const rsvpForm = document.getElementById('rsvpForm');
 const successModal = document.getElementById('successModal');
 const closeSuccessModal = document.getElementById('closeSuccessModal');
+const attendeesSelect = document.getElementById('attendees');
+const additionalGuestsContainer = document.getElementById('additionalGuestsContainer');
+const additionalGuestsField = document.getElementById('additionalGuests');
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -180,14 +188,73 @@ document.addEventListener('DOMContentLoaded', () => {
         hideModal(rsvpModal);
     });
 
+    if (attendeesSelect) {
+        attendeesSelect.addEventListener('change', handleAttendeesChange);
+        handleAttendeesChange();
+    }
+
     // RSVP form submission
-    rsvpForm.addEventListener('submit', (e) => {
+    rsvpForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        hideModal(rsvpModal);
-        setTimeout(() => {
-            showModal(successModal);
-            rsvpForm.reset();
-        }, 300);
+
+        const formData = new FormData(rsvpForm);
+        const firstName = (formData.get('firstName') || '').trim();
+        const lastName = (formData.get('lastName') || '').trim();
+        const phone = (formData.get('phone') || '').trim();
+        const attendeesValue = formData.get('attendees') || '';
+        const attendeesCount = parseInt(attendeesValue, 10);
+        const additionalGuests = (formData.get('additionalGuests') || '').trim();
+        const submitButton = rsvpForm.querySelector('button[type="submit"]');
+
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+
+        const payload = {
+            prenom: firstName,
+            nom: lastName,
+            telephone: phone,
+            nombre_participants: attendeesValue,
+            _subject: FORM_SUBJECT,
+            _captcha: 'false'
+        };
+
+        if (!Number.isNaN(attendeesCount) && attendeesCount > 1) {
+            payload.invites_supplementaires = additionalGuests || 'Non précisé';
+        }
+
+        try {
+            const response = await fetch(FORM_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Form submission failed with status ${response.status}`);
+            }
+
+            await response.json();
+            hideModal(rsvpModal);
+            setTimeout(() => {
+                showModal(successModal);
+                rsvpForm.reset();
+                handleAttendeesChange();
+            }, 300);
+        } catch (error) {
+            console.error('RSVP submission error:', error);
+            const errorMessage = currentLanguage === 'fr'
+                ? "Impossible d'envoyer votre réponse pour le moment. Merci de réessayer plus tard."
+                : 'Não foi possível enviar a sua resposta. Tente novamente mais tarde.';
+            alert(errorMessage);
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+        }
     });
 
     closeSuccessModal.addEventListener('click', () => {
@@ -227,6 +294,23 @@ function updateLanguage(lang) {
             el.textContent = translations[lang][key];
         }
     });
+}
+
+function handleAttendeesChange() {
+    if (!attendeesSelect || !additionalGuestsContainer || !additionalGuestsField) {
+        return;
+    }
+
+    const count = parseInt(attendeesSelect.value, 10);
+
+    if (!Number.isNaN(count) && count > 1) {
+        additionalGuestsContainer.classList.remove('hidden');
+        additionalGuestsField.required = true;
+    } else {
+        additionalGuestsContainer.classList.add('hidden');
+        additionalGuestsField.required = false;
+        additionalGuestsField.value = '';
+    }
 }
 
 // Show modal with animation
