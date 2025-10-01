@@ -63,8 +63,10 @@ const translations = {
         selectNumber: "Sélectionnez un nombre",
         additionalGuestsLabel: "Noms des invités supplémentaires",
         submitRsvp: "Soumettre RSVP",
+        declineRsvp: "Je ne viens pas",
         thankYou: "Merci!",
         rsvpConfirmed: "Votre RSVP a été confirmé. Nous avons hâte de célébrer avec vous!",
+        rsvpDeclined: "Nous sommes tristes de ne pas vous voir ce jour-là.",
         close: "Fermer",
         thankYouForCelebrating: "Merci de célébrer avec nous!",
         contactInfoPrefix: "Pour toute question, veuillez nous contacter au "
@@ -106,8 +108,10 @@ const translations = {
         selectNumber: "Selecione um número",
         additionalGuestsLabel: "Nomes dos convidados adicionais",
         submitRsvp: "Enviar Confirmação",
+        declineRsvp: "Não posso vir",
         thankYou: "Obrigado!",
         rsvpConfirmed: "Sua confirmação foi recebida. Estamos ansiosos para celebrar com você!",
+        rsvpDeclined: "Estamos tristes por não podermos celebrar com você nesse dia.",
         close: "Fechar",
         thankYouForCelebrating: "Obrigado por celebrar conosco!",
         contactInfoPrefix: "Para qualquer dúvida, entre em contato conosco"
@@ -118,6 +122,7 @@ let currentLanguage = 'fr';
 
 const FORM_ENDPOINT = 'https://formsubmit.co/ajax/c.kevinpereira@gmail.com';
 const FORM_SUBJECT = '[ Réponse mariage]';
+const FORM_DECLINE_SUBJECT = '[ Reponse NEGATIVE ]';
 
 // DOM Elements
 const languageScreen = document.getElementById('languageScreen');
@@ -134,8 +139,10 @@ const rsvpBtn = document.getElementById('rsvpBtn');
 const rsvpModal = document.getElementById('rsvpModal');
 const closeRsvpModal = document.getElementById('closeRsvpModal');
 const rsvpForm = document.getElementById('rsvpForm');
+const declineButton = document.getElementById('declineButton');
 const successModal = document.getElementById('successModal');
 const closeSuccessModal = document.getElementById('closeSuccessModal');
+const successMessage = document.getElementById('successMessage');
 const attendeesSelect = document.getElementById('attendees');
 const additionalGuestsContainer = document.getElementById('additionalGuestsContainer');
 const additionalGuestsField = document.getElementById('additionalGuests');
@@ -194,9 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // RSVP form submission
-    rsvpForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
+    const handleRsvpSubmission = async (declined) => {
         const formData = new FormData(rsvpForm);
         const firstName = (formData.get('firstName') || '').trim();
         const lastName = (formData.get('lastName') || '').trim();
@@ -206,22 +211,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const additionalGuests = (formData.get('additionalGuests') || '').trim();
         const submitButton = rsvpForm.querySelector('button[type="submit"]');
 
-        if (submitButton) {
-            submitButton.disabled = true;
-        }
+        [submitButton, declineButton].forEach(button => {
+            if (button) {
+                button.disabled = true;
+            }
+        });
 
         const payload = {
             prenom: firstName,
             nom: lastName,
             telephone: phone,
             nombre_participants: attendeesValue,
-            _subject: FORM_SUBJECT,
+            _subject: declined ? FORM_DECLINE_SUBJECT : FORM_SUBJECT,
             _captcha: 'false'
         };
 
         if (!Number.isNaN(attendeesCount) && attendeesCount > 1) {
             payload.invites_supplementaires = additionalGuests || 'Non précisé';
         }
+
+        payload.presence = declined ? 'non' : 'oui';
 
         try {
             const response = await fetch(FORM_ENDPOINT, {
@@ -238,6 +247,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             await response.json();
+
+            const successMessageKey = declined ? 'rsvpDeclined' : 'rsvpConfirmed';
+            const translationsForLang = translations[currentLanguage] || {};
+            if (successMessage && translationsForLang[successMessageKey]) {
+                successMessage.setAttribute('data-lang-key', successMessageKey);
+                successMessage.textContent = translationsForLang[successMessageKey];
+            }
+
             hideModal(rsvpModal);
             setTimeout(() => {
                 showModal(successModal);
@@ -251,11 +268,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 : 'Não foi possível enviar a sua resposta. Tente novamente mais tarde.';
             alert(errorMessage);
         } finally {
-            if (submitButton) {
-                submitButton.disabled = false;
-            }
+            [submitButton, declineButton].forEach(button => {
+                if (button) {
+                    button.disabled = false;
+                }
+            });
         }
+    };
+
+    rsvpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleRsvpSubmission(false);
     });
+
+    if (declineButton) {
+        declineButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const formIsValid = typeof rsvpForm.reportValidity === 'function'
+                ? rsvpForm.reportValidity()
+                : rsvpForm.checkValidity();
+            if (!formIsValid) {
+                return;
+            }
+            handleRsvpSubmission(true);
+        });
+    }
 
     closeSuccessModal.addEventListener('click', () => {
         hideModal(successModal);
